@@ -72,6 +72,12 @@ const TOOL_HANDLERS: Record<string, ToolHandler> = {
   get_asset_thumbnail: (tools, body) => tools.getAssetThumbnail(body.assetId, body.size),
   insert_asset: (tools, body) => tools.insertAsset(body.assetId, body.parentPath, body.position),
   preview_asset: (tools, body) => tools.previewAsset(body.assetId, body.includeProperties, body.maxDepth),
+  take_screenshot: (tools, body) => tools.takeScreenshot(body.compression),
+  capture_sequence: (tools, body) => tools.captureSequence(body.frames, body.interval, body.showLabels, body.compression),
+  get_full_state: (tools) => tools.getFullState(),
+  get_diagnostics: (tools) => tools.getDiagnostics(),
+  get_logs: (tools, body) => tools.getLogs(body.maxEntries),
+  test_scenario: (tools, body) => tools.testScenario(body.testCode, body.setupCode, body.mode, body.captureDelay, body.timeout, body.screenshotCompression),
 };
 
 export function createHttpServer(tools: RobloxStudioTools, bridge: BridgeService, allowedTools?: Set<string>) {

@@ -2,6 +2,10 @@ import { StudioHttpClient } from './studio-client.js';
 import { BridgeService } from '../bridge-service.js';
 import { runBuildExecutor } from './build-executor.js';
 import { OpenCloudClient } from '../opencloud-client.js';
+import { takeScreenshot } from './screenshot.js';
+import { captureSequence } from './sequence-capture.js';
+import { getFullState, getDiagnostics, getLogs } from './game-state.js';
+import { runTestScenario } from './test-scenario.js';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -1225,5 +1229,65 @@ export class RobloxStudioTools {
         text: JSON.stringify(response)
       }]
     };
+  }
+
+
+  // === Screenshot & Sequence Capture ===
+
+  async takeScreenshot(compression?: string) {
+    return await takeScreenshot({ compression: compression as any });
+  }
+
+  async captureSequence(frames?: number, interval?: number, showLabels?: boolean, compression?: string) {
+    return await captureSequence({
+      frames,
+      interval,
+      showLabels,
+      compression: compression as any,
+    });
+  }
+
+
+  // === Game State / Diagnostics / Logs ===
+
+  async getFullState() {
+    return await getFullState(this.client);
+  }
+
+  async getDiagnostics() {
+    return await getDiagnostics(this.client);
+  }
+
+  async getLogs(maxEntries?: number) {
+    return await getLogs(this.client, maxEntries);
+  }
+
+
+  // === Test Scenario ===
+
+  async testScenario(
+    testCode: string,
+    setupCode?: string,
+    mode?: string,
+    captureDelay?: number,
+    timeout?: number,
+    screenshotCompression?: string
+  ) {
+    return await runTestScenario(
+      {
+        startPlaytest: (m: string) => this.startPlaytest(m),
+        executeLuau: (code: string) => this.executeLuau(code),
+        getPlaytestOutput: () => this.getPlaytestOutput(),
+        stopPlaytest: () => this.stopPlaytest(),
+      },
+      {
+        testCode,
+        setupCode,
+        mode: mode as 'play' | 'run',
+        captureDelay,
+        timeout,
+        screenshotCompression: screenshotCompression as any,
+      }
+    );
   }
 }

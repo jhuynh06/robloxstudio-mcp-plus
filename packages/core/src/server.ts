@@ -211,6 +211,28 @@ export class RobloxStudioMCPServer {
           case 'preview_asset':
             return await this.tools.previewAsset((args as any)?.assetId as number, (args as any)?.includeProperties, (args as any)?.maxDepth);
 
+          case 'take_screenshot':
+            return await this.tools.takeScreenshot((args as any)?.compression);
+          case 'capture_sequence':
+            return await this.tools.captureSequence((args as any)?.frames, (args as any)?.interval, (args as any)?.showLabels, (args as any)?.compression);
+
+          case 'get_full_state':
+            return await this.tools.getFullState();
+          case 'get_diagnostics':
+            return await this.tools.getDiagnostics();
+          case 'get_logs':
+            return await this.tools.getLogs((args as any)?.maxEntries);
+
+          case 'test_scenario':
+            return await this.tools.testScenario(
+              (args as any)?.testCode as string,
+              (args as any)?.setupCode,
+              (args as any)?.mode,
+              (args as any)?.captureDelay,
+              (args as any)?.timeout,
+              (args as any)?.screenshotCompression
+            );
+
           default:
             throw new McpError(
               ErrorCode.MethodNotFound,

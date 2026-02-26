@@ -1341,6 +1341,133 @@ part(0,2,0,2,1,1,"b")`,
       required: ['assetId']
     }
   },
+
+  // === Screenshot & Visual Feedback ===
+  {
+    name: 'take_screenshot',
+    category: 'read',
+    description: 'Capture a screenshot of the Roblox Studio window. Returns a base64-encoded image. Use compression to control output size — "high" for quick glances, "none" for full-resolution.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        compression: {
+          type: 'string',
+          enum: ['none', 'low', 'medium', 'high'],
+          description: 'Compression level. none=full PNG, low=1920px JPEG q85, medium=1280px JPEG q70, high=800px JPEG q50. Default: medium.',
+          default: 'medium'
+        }
+      }
+    }
+  },
+  {
+    name: 'capture_sequence',
+    category: 'read',
+    description: 'Capture multiple frames of Roblox Studio at timed intervals and stitch them into a single grid image. Useful for observing animations, transitions, or time-based changes.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        frames: {
+          type: 'number',
+          description: 'Number of frames to capture (2-16, default 4)',
+          default: 4
+        },
+        interval: {
+          type: 'number',
+          description: 'Milliseconds between captures (min 200, default 1000)',
+          default: 1000
+        },
+        showLabels: {
+          type: 'boolean',
+          description: 'Overlay frame numbers on each cell (default true)',
+          default: true
+        },
+        compression: {
+          type: 'string',
+          enum: ['low', 'medium', 'high'],
+          description: 'Compression level for the composite image (default medium)',
+          default: 'medium'
+        }
+      }
+    }
+  },
+
+  // === Game State & Diagnostics ===
+  {
+    name: 'get_full_state',
+    category: 'read',
+    description: 'Get a comprehensive snapshot of the current game state: playing status, plugin health, HTTP config, recent logs. Token-efficient alternative to screenshots for understanding context.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'get_diagnostics',
+    category: 'read',
+    description: 'Get detailed system diagnostics: port status, plugin version, connection stats, memory usage. Useful for debugging connection issues.',
+    inputSchema: {
+      type: 'object',
+      properties: {}
+    }
+  },
+  {
+    name: 'get_logs',
+    category: 'read',
+    description: 'Get recent output log entries from Studio. Token-efficient circular buffer (most recent N entries) — much cheaper than screenshots for checking output.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        maxEntries: {
+          type: 'number',
+          description: 'Maximum log entries to return (default 50)',
+          default: 50
+        }
+      }
+    }
+  },
+
+  // === Test Orchestration ===
+  {
+    name: 'test_scenario',
+    category: 'write',
+    description: 'Run an automated test scenario: start playtest, run setup code, execute test code, capture screenshot, collect output, stop playtest. Combines 4-5 manual steps into one tool call.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        testCode: {
+          type: 'string',
+          description: 'Luau code to execute as the test'
+        },
+        setupCode: {
+          type: 'string',
+          description: 'Optional Luau code to run before the test (e.g. spawning objects, setting state)'
+        },
+        mode: {
+          type: 'string',
+          enum: ['play', 'run'],
+          description: 'Playtest mode (default: play)',
+          default: 'play'
+        },
+        captureDelay: {
+          type: 'number',
+          description: 'Milliseconds to wait before taking the screenshot (default 2000)',
+          default: 2000
+        },
+        timeout: {
+          type: 'number',
+          description: 'Maximum test duration in ms (default 30000)',
+          default: 30000
+        },
+        screenshotCompression: {
+          type: 'string',
+          enum: ['none', 'low', 'medium', 'high'],
+          description: 'Screenshot compression level (default medium)',
+          default: 'medium'
+        }
+      },
+      required: ['testCode']
+    }
+  },
 ];
 
 export const getReadOnlyTools = () => TOOL_DEFINITIONS.filter(t => t.category === 'read');
