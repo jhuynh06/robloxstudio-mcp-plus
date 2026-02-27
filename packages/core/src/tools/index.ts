@@ -710,15 +710,20 @@ export class RobloxStudioTools {
 
 
   private static findLibraryPath(): string {
-    // Walk up from the script location to find the repo root (has .gitignore + package.json)
+    // Walk up from the script location to find the repo root (has package.json + .git)
     let dir = path.dirname(decodeURIComponent(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1'));
     for (let i = 0; i < 6; i++) {
       const candidate = path.join(dir, 'build-library');
       if (fs.existsSync(candidate)) return candidate;
+      // Check if this is the repo root
+      if (fs.existsSync(path.join(dir, 'package.json')) && fs.existsSync(path.join(dir, '.git'))) {
+        fs.mkdirSync(candidate, { recursive: true });
+        return candidate;
+      }
       dir = path.dirname(dir);
     }
-    // Fallback: create next to wherever we are
-    const fallback = path.join(dir, 'build-library');
+    // Fallback: create in current working directory
+    const fallback = path.join(process.cwd(), 'build-library');
     fs.mkdirSync(fallback, { recursive: true });
     return fallback;
   }

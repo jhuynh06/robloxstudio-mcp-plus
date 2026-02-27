@@ -1176,8 +1176,7 @@ part(0,2,0,2,1,1,"b")`,
                 type: 'array',
                 minItems: 2,
                 maxItems: 3,
-                additionalItems: false,
-                items: [
+                prefixItems: [
                   {
                     type: 'string',
                     minLength: 1
@@ -1194,7 +1193,8 @@ part(0,2,0,2,1,1,"b")`,
                     minItems: 3,
                     maxItems: 3
                   }
-                ]
+                ],
+                items: false
               }
             },
             custom: {

@@ -8,6 +8,7 @@ export default defineConfig({
   splitting: false,
   clean: true,
   noExternal: ['@robloxstudio-mcp/core'],
+  external: ['sharp'],
   banner: {
     js: '#!/usr/bin/env node',
   },
